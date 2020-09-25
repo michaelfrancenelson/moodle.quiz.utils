@@ -1,34 +1,18 @@
-#'find a file
+#' Find a file
+#'
+#' Locate a file somewhere within the directory structure of an RProject.
 #'
 #'
-#'Locate a file somewhere within the directory structure of an RProject.
+#' @param filename Name of the file to search for
+#' @param search_path Optional path within which to search
+#' @param return_all Return all matches?
+#' @param duplicated_files_error Throw an error if more than one matching file found?
+#' @param verbose Print messages?
+#' @param directory Search for a directory instead of a file?
+#' @param extension Search for files with this extension only?
+#' @param error_if_none Throw an error if no matches are found?  If FALSE, the function returns a NULL value.
 #'
-#'
-#'@param filename Name of the file to search for
-#'@param search_path Optional path within which to search
-#'@param return_all Return all matches?
-#'@param duplicated_files_error Throw an error if more than one matching file found?
-#'@param verbose Print messages?
-#'@param directory Search for a directory instead of a file?
-#'@param extension Search for files with this extension only?
-#'@param error_if_none Throw an error if no matches are found?  If FALSE, the function returns a NULL value.
-#'@return The absolute path to the file, if it was found.
-
-
-
-if(FALSE)
-{
-  filename = "lab_01_r_fundamentals_1"
-  search_path = NULL
-  return_all = FALSE
-  duplicated_files_error = FALSE
-  verbose=FALSE
-  directory = FALSE
-  extension = ".Rmd"
-  error_if_none = TRUE
-}
-
-
+#' @return The absolute path to the file, if it was found.
 
 find_file = function(
   filename,
@@ -40,11 +24,6 @@ find_file = function(
   extension = NULL,
   error_if_none = TRUE)
 {
-
-  if (!("here" %in% library()$results))
-    errorCondition("Package 'here' is required for function 'find_file()'")
-
-  require(here)
 
   if (is.null(search_path))  search_path = here::here()
 
