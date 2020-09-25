@@ -1,6 +1,7 @@
-
-
-#' Locate a file somewhere within the directory structure of an RProject.
+#'find a file
+#'
+#'
+#'Locate a file somewhere within the directory structure of an RProject.
 #'
 #'
 #'@param filename Name of the file to search for
@@ -24,10 +25,8 @@ if(FALSE)
   verbose=FALSE
   directory = FALSE
   extension = ".Rmd"
+  error_if_none = TRUE
 }
-
-
-
 
 
 
@@ -39,11 +38,12 @@ find_file = function(
   verbose=FALSE,
   directory = FALSE,
   extension = NULL,
-  error_if_none = FALSE)
+  error_if_none = TRUE)
 {
 
   if (!("here" %in% library()$results))
-    cat("\nPackage 'here' is required for function 'find_file()'")
+    errorCondition("Package 'here' is required for function 'find_file()'")
+
   require(here)
 
   if (is.null(search_path))  search_path = here::here()
@@ -67,36 +67,40 @@ find_file = function(
         recursive = TRUE,
         full.names = TRUE)
 
+
+  # If no matches are found:
+  if (length(matches) == 0)
+  {
+    if(verbose) warning(sprintf("File '%s' not found", filename))
+
+    # if a file not found error is requested (the default)
+    if (error_if_none) stopifnot(length(matches) > 0)
+
+    return(NULL)
+  }
+
+
+  # Check for matching file extension
   if (!is.null(extension))
     matches = matches[grepl(extension, matches)]
 
-  if (length(matches) == 0)
-  {
-      if(verbose)
-    cat(sprintf("File '%s' not found", filename))
 
-    if (!null_if_none)
-      stopifnot(length(matches) > 0) else
-        return(NULL)
-  }
-
+  # If duplicate matches are found:
   if (length(matches) > 1)
   {
     if(verbose)
-      cat(sprintf(
+      warn(sprintf(
         "Warning: duplicate files matching filename: '%1$s' were found:",
         filename))
-    sapply(matches, function(f) cat(sprintf("\n%s", f)))
+    sapply(matches, function(f) warn(sprintf("%s", f)))
+      # if(verbose)
+      #   cat("\nError: Duplicate files were found with option 'duplicated_files_error = TRUE'")
 
-    if (duplicated_files_error & !return_all)
-    {
-      if(verbose)
-        cat("\nError: Duplicate files were found with option 'duplicated_files_error = TRUE'")
+    if (duplicated_files_error)
       stopifnot(length(matches) == 1)
-    }
-  }
 
-  if (return_all) return(matches)
+    if (return_all) return(matches)
+  }
 
   return(matches[1])
 }
